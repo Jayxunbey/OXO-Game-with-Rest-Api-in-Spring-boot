@@ -17,7 +17,7 @@ public class GameContoller {
 
     @PostMapping("/new")
     public void newGame() {
-//        gameService
+        gameService.newGame();
     }
 
 
