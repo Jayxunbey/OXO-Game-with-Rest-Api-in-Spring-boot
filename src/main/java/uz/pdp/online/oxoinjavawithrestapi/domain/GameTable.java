@@ -17,6 +17,4 @@ public class GameTable {
 
     private List<List<Cell>> table;
 
-
-
 }

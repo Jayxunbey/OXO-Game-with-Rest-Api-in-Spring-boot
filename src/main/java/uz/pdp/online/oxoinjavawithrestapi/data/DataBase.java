@@ -30,6 +30,9 @@ public class DataBase {
     }
 
     public void clearDatabase() {
+        if (gamesInProgressList.isEmpty()) {
+            return;
+        }
         gamesInProgressList.remove(0);
     }
 }
