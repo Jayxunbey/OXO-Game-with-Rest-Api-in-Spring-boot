@@ -1,12 +1,12 @@
 package uz.pdp.online.oxoinjavawithrestapi.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@Builder
 public class GameInProgress {
 
     private Player firstPlayer;

@@ -9,10 +9,27 @@ import java.util.List;
 @Component
 public class DataBase {
 
-    List<GameInProgress> gamesInProgress;
+    private List<GameInProgress> gamesInProgressList;
+    private int counterForChoosingSymbolForUser;
 
     {
-        gamesInProgress = new ArrayList<>();
+        gamesInProgressList = new ArrayList<>();
+        counterForChoosingSymbolForUser = 0;
     }
 
+    public GameInProgress getGamesInProgress() {
+        return gamesInProgressList.get(0);
+    }
+
+    public int getCounterForChoosingSymbolForUser() {
+        return counterForChoosingSymbolForUser;
+    }
+
+    public void addGamesInProgress(GameInProgress gameInProgress) {
+        gamesInProgressList.add(gameInProgress);
+    }
+
+    public void clearDatabase() {
+        gamesInProgressList.remove(0);
+    }
 }

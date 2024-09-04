@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Player {
     private String name;
+    private Character symbol;
 }
