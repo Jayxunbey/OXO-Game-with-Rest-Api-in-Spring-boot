@@ -35,4 +35,19 @@ public class DataBase {
         }
         gamesInProgressList.remove(0);
     }
+
+    public boolean hasGame() {
+        return !gamesInProgressList.isEmpty();
+    }
+
+    public boolean hasSteps() {
+        return getGamesInProgress().getGameTable().getTable().stream().anyMatch(cells -> {
+            return cells.stream().anyMatch(cell -> {
+                if (cell.getMarkedBy() == null) {
+                    return true;
+                }
+                return false;
+            });
+        });
+    }
 }

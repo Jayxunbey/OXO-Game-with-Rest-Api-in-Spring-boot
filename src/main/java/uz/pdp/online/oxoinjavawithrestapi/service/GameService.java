@@ -49,12 +49,12 @@ public class GameService {
 
         dataBase.addGamesInProgress(gameInProgress);
 
-        TableRespDto respObj = getRespObj();
+        TableRespDto respObj = getRespObj(null, "ongoing");
 
         return respObj;
     }
 
-    private TableRespDto getRespObj() {
+    private TableRespDto getRespObj(List<Integer> winnerLine, String gameStatus) {
         GameInProgress gamesInProgress = dataBase.getGamesInProgress();
         List<List<Cell>> table = gamesInProgress.getGameTable().getTable();
 
@@ -86,7 +86,8 @@ public class GameService {
                                 playerMapper.respDto(dataBase.getGamesInProgress().getSecondPlayer())
                         )
                 )
-                .gameStatus("ongoing")
+                .winnerLine(winnerLine)
+                .gameStatus(gameStatus)
                 .build();
 
         return tableRespDto;
@@ -104,10 +105,13 @@ public class GameService {
          */
         int generatedNumberForStep = new Random().nextInt(25);
 
+        boolean haveOneCellAtLeast = false;
+
         while (generatedNumberForStep > -1) {
             for (List<Cell> row : table) {
                 for (Cell cell : row) {
                     if (cell.getMarkedBy() == null) {
+                        haveOneCellAtLeast = true;
                         if (generatedNumberForStep == 0) {
                             cell.setMarkedBy(bot);
                             return;
@@ -115,6 +119,9 @@ public class GameService {
                         generatedNumberForStep--;
                     }
                 }
+            }
+            if (!haveOneCellAtLeast) {
+                return;
             }
         }
     }
@@ -144,6 +151,8 @@ public class GameService {
         Integer cellNumber = markingCellReqDto.getCellNumber();
         Character symbol = markingCellReqDto.getSymbol();
 
+        TableRespDto respDto;
+
         if (checkIsNotMarked(cellNumber)) {
             if (checkSymbolForQueue(symbol)) {
                 List<List<Cell>> table = dataBase.getGamesInProgress().getGameTable().getTable();
@@ -154,6 +163,12 @@ public class GameService {
                             cell.setMarkedBy(
                                     new Player("user", symbol)
                             );
+
+                             respDto = getWithCheckingWinner();
+                            if (respDto.getWinnerLine()!=null) {
+                                return respDto;
+                            }
+
                             botTakesOneStep(
                                     dataBase.getGamesInProgress(),
                                     dataBase.getGamesInProgress().getFirstPlayer().getName().equals("bot")?
@@ -164,7 +179,68 @@ public class GameService {
             }
         }
 
-        return getRespObj();
+        return getWithCheckingWinner();
+
+
+    }
+
+    private TableRespDto getWithCheckingWinner() {
+
+        List<Integer> winnerLine = getWinnerLine();
+        Boolean hasStep = hasStep();
+        if (!hasStep) {
+            if (winnerLine==null) {
+                return getRespObj(winnerLine, "equal");
+            }
+        }
+
+        if (winnerLine!=null)
+        {
+            return getRespObj(winnerLine, "won");
+        }
+
+        return getRespObj(winnerLine, "ongoing");
+
+
+    }
+
+    private Boolean hasStep() {
+        return dataBase.hasSteps();
+    }
+
+    private List<Integer> getWinnerLine() {
+        List<List<Integer>> cases = List.of(
+                List.of(1, 2, 3),
+                List.of(4, 5, 6),
+                List.of(7, 8, 9),
+                List.of(1, 4, 7),
+                List.of(2, 5, 8),
+                List.of(3, 6, 9),
+                List.of(1, 5, 9),
+                List.of(3, 5, 7)
+        );
+
+        List<List<Cell>> table = dataBase.getGamesInProgress().getGameTable().getTable();
+
+        List<Cell> singleList = new ArrayList<>();
+
+        for (List<Cell> row : table) {
+            for (Cell cell : row) {
+                singleList.add(cell);
+            }
+        }
+
+        for (List<Integer> caseNumbers : cases) {
+
+            if ((singleList.get(caseNumbers.get(0)-1).getMarkedBy()!=null && singleList.get(caseNumbers.get(1)-1).getMarkedBy()!=null && singleList.get(caseNumbers.get(2)-1).getMarkedBy()!=null) &&
+                    (singleList.get(caseNumbers.get(0)-1).getMarkedBy().getSymbol().charValue()==singleList.get(caseNumbers.get(1)-1).getMarkedBy().getSymbol().charValue() &&
+                            singleList.get(caseNumbers.get(0)-1).getMarkedBy().getSymbol().charValue()==singleList.get(caseNumbers.get(2)-1).getMarkedBy().getSymbol().charValue())) {
+                return caseNumbers;
+            }
+
+        }
+
+        return null;
 
 
     }
@@ -200,5 +276,13 @@ public class GameService {
             }
         }
         return false;
+    }
+
+    public TableRespDto checkingAndGet() {
+        if (dataBase.hasGame()) {
+            return getWithCheckingWinner();
+        }else{
+            return newGame();
+        }
     }
 }

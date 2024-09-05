@@ -32,5 +32,11 @@ public class GameWithBotContoller {
         return ResponseEntity.ok(tableRespDto);
     }
 
+    @GetMapping("/checking-available-game-and-load")
+    public ResponseEntity<TableRespDto> chekingIfAvailableGameLoad() {
+        TableRespDto tableRespDto = gameService.checkingAndGet();
+        return ResponseEntity.ok(tableRespDto);
+    }
+
 
 }

@@ -17,5 +17,6 @@ import java.util.List;
 public class TableRespDto {
     List<List<CellRespDto>> table;
     List<PlayerRespDto> players;
+    List<Integer> winnerLine;
     String gameStatus;
 }
