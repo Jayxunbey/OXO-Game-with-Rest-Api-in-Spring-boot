@@ -1,6 +1,8 @@
 This is an OXO (Tic Tac Toe) game. You play with the computer in this game.
 
-This is web files of this game: [WebFilesOfOXO.zip](https://github.com/user-attachments/files/16886826/WebForOXOGame.zip)
+You don't need any database to use this program because the program uses a temporary database
+
+Here is web files of this program: [Download Zip file](https://github.com/user-attachments/files/16886826/WebForOXOGame.zip)
 
 
 below is the web view of the game:
