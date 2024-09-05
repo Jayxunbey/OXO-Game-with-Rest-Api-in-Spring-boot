@@ -184,7 +184,6 @@ public class GameService {
                 }
             }
         }
-
         return getWithCheckingWinner();
     }
 
