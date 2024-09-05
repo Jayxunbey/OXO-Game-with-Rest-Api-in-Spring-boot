@@ -2,6 +2,7 @@ package uz.pdp.online.oxoinjavawithrestapi.data;
 
 import org.springframework.stereotype.Component;
 import uz.pdp.online.oxoinjavawithrestapi.domain.GameInProgress;
+import uz.pdp.online.oxoinjavawithrestapi.domain.HistoryOfResultGame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +11,20 @@ import java.util.List;
 public class DataBase {
 
     private List<GameInProgress> gamesInProgressList;
+    private List<HistoryOfResultGame> historyOfResultGameList;
     private int counterForChoosingSymbolForUser;
 
     {
         gamesInProgressList = new ArrayList<>();
+        historyOfResultGameList = new ArrayList<>();
         counterForChoosingSymbolForUser = 0;
     }
 
     public GameInProgress getGamesInProgress() {
-        return gamesInProgressList.get(0);
+
+        GameInProgress gameInProgress = gamesInProgressList.get(0);
+
+        return gameInProgress;
     }
 
     public int getCounterForChoosingSymbolForUser() {
@@ -49,5 +55,9 @@ public class DataBase {
                 return false;
             });
         });
+    }
+
+    public List<HistoryOfResultGame> getHistoryOfResultGameList() {
+        return historyOfResultGameList;
     }
 }

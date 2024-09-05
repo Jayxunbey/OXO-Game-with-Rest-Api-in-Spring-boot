@@ -3,8 +3,11 @@ package uz.pdp.online.oxoinjavawithrestapi.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.online.oxoinjavawithrestapi.dto.request.MarkingCellReqDto;
+import uz.pdp.online.oxoinjavawithrestapi.dto.response.HistoryOfResultGameRespDto;
 import uz.pdp.online.oxoinjavawithrestapi.dto.response.TableRespDto;
 import uz.pdp.online.oxoinjavawithrestapi.service.GameService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/game/with-bot")
@@ -38,5 +41,11 @@ public class GameWithBotContoller {
         return ResponseEntity.ok(tableRespDto);
     }
 
+    @GetMapping("/all-result")
+    public ResponseEntity<List<HistoryOfResultGameRespDto>> allResult() {
+        List<HistoryOfResultGameRespDto> allResult = gameService.getAllResult();
+
+        return ResponseEntity.ok(allResult);
+    }
 
 }

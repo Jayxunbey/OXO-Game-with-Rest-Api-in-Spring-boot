@@ -2,16 +2,15 @@ package uz.pdp.online.oxoinjavawithrestapi.service;
 
 import org.springframework.stereotype.Service;
 import uz.pdp.online.oxoinjavawithrestapi.data.DataBase;
-import uz.pdp.online.oxoinjavawithrestapi.domain.Cell;
-import uz.pdp.online.oxoinjavawithrestapi.domain.GameInProgress;
-import uz.pdp.online.oxoinjavawithrestapi.domain.GameTable;
-import uz.pdp.online.oxoinjavawithrestapi.domain.Player;
+import uz.pdp.online.oxoinjavawithrestapi.domain.*;
 import uz.pdp.online.oxoinjavawithrestapi.dto.request.MarkingCellReqDto;
 import uz.pdp.online.oxoinjavawithrestapi.dto.response.CellRespDto;
+import uz.pdp.online.oxoinjavawithrestapi.dto.response.HistoryOfResultGameRespDto;
 import uz.pdp.online.oxoinjavawithrestapi.dto.response.TableRespDto;
 import uz.pdp.online.oxoinjavawithrestapi.mapper.PlayerMapper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -90,6 +89,10 @@ public class GameService {
                 .gameStatus(gameStatus)
                 .build();
 
+        if (gameStatus.equals("won") || gameStatus.equals("equal")){
+            dataBase.clearDatabase();
+        }
+
         return tableRespDto;
 
     }
@@ -165,7 +168,7 @@ public class GameService {
                             );
 
                              respDto = getWithCheckingWinner();
-                            if (respDto.getWinnerLine()!=null) {
+                            if (!respDto.getGameStatus().equals("ongoing")) {
                                 return respDto;
                             }
 
@@ -190,16 +193,50 @@ public class GameService {
         Boolean hasStep = hasStep();
         if (!hasStep) {
             if (winnerLine==null) {
+                completeAndSaveResultTheGame(winnerLine);
                 return getRespObj(winnerLine, "equal");
             }
         }
 
         if (winnerLine!=null)
         {
+            completeAndSaveResultTheGame(winnerLine);
             return getRespObj(winnerLine, "won");
         }
 
         return getRespObj(winnerLine, "ongoing");
+
+
+    }
+
+    private void completeAndSaveResultTheGame(List<Integer> winnerLine) {
+
+        List<HistoryOfResultGame> historyOfResultGameList = dataBase.getHistoryOfResultGameList();
+
+        if (winnerLine==null){
+            historyOfResultGameList.add(
+                    new HistoryOfResultGame(null, new Date())
+            );
+            return;
+        }
+
+        Integer cellNumber = winnerLine.get(0);
+        int counter=0;
+
+
+
+        GameTable gameTable = dataBase.getGamesInProgress().getGameTable();
+        for (List<Cell> cells : gameTable.getTable()) {
+            for (Cell cell : cells) {
+                if (cellNumber==(++counter)) {
+                    historyOfResultGameList.add(
+                            new HistoryOfResultGame(cell.getMarkedBy(), new Date())
+                    );
+
+                    return;
+                }
+            }
+        }
 
 
     }
@@ -284,5 +321,24 @@ public class GameService {
         }else{
             return newGame();
         }
+    }
+
+    public List<HistoryOfResultGameRespDto> getAllResult() {
+
+        List<HistoryOfResultGame> historyOfResultGameList = dataBase.getHistoryOfResultGameList();
+
+        List<HistoryOfResultGameRespDto> returnResultDto = new ArrayList<>();
+
+        for (HistoryOfResultGame historyOfResultGame : historyOfResultGameList) {
+            returnResultDto.add(
+                    new HistoryOfResultGameRespDto(
+                            playerMapper.respDto(historyOfResultGame.getWinner()),
+                            String.valueOf(historyOfResultGame.getDate().getTime())
+                    )
+            );
+        }
+
+        return returnResultDto;
+
     }
 }
